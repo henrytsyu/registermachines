@@ -4,8 +4,28 @@ import com.henrytsyu.registermachines.exception.RMException;
 import com.henrytsyu.registermachines.exception.RMInstructionException;
 import com.henrytsyu.registermachines.exception.RMLabelException;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class RMParser {
+  public List<RMLine> parseFromFile(String filename) throws RMException {
+    return parseLines(RMFileReader.readLinesFromFile(filename));
+  }
+
+  public List<RMLine> parseLines(List<String> lines) throws RMException {
+    List<RMLine> rmLines = new ArrayList<>();
+    for (int i = 0; i < lines.size(); i++) {
+      try {
+        rmLines.add(parseLine(lines.get(i)));
+      } catch (RMException e) {
+        System.err.println("Syntax error on line " + (i + 1));
+        throw e;
+      }
+    }
+    return rmLines;
+  }
+
   public RMLine parseLine(String line) throws RMException {
     String[] labelInstruction = line.split(":");
     if (labelInstruction.length != 2) throw new RMException();
@@ -41,6 +61,7 @@ public class RMParser {
     }
 
     if (operand == '-') {
+      // Parses jump targets for decrement instruction
       String[] targets = operationTargets[1].split(",");
       RMLabel labelSuccess = parseLabel(targets[0]);
       RMLabel labelFail = parseLabel(targets[1]);
