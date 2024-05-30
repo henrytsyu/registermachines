@@ -1,16 +1,29 @@
 package com.henrytsyu.registermachines.parser;
 
+import com.henrytsyu.registermachines.exception.RMDuplicateLineException;
 import com.henrytsyu.registermachines.exception.RMException;
 import com.henrytsyu.registermachines.exception.RMInstructionException;
 import com.henrytsyu.registermachines.exception.RMLabelException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class RMParser {
-  public List<RMLine> parseFromFile(String filename) throws RMException {
-    return parseLines(RMFileReader.readLinesFromFile(filename));
+  public Map<Integer, RMInstruction> parseFromFile(String filename) throws RMException {
+    return linesToMap(parseLines(RMFileReader.readLinesFromFile(filename)));
+  }
+
+  private Map<Integer, RMInstruction> linesToMap(List<RMLine> lines) throws RMException {
+    Map<Integer, RMInstruction> map = new HashMap<>();
+    for (RMLine line : lines) {
+      int lineNumber = line.label().lineNumber();
+      if (map.containsKey(lineNumber)) throw new RMDuplicateLineException();
+      map.put(lineNumber, line.instruction());
+    }
+    return map;
   }
 
   public List<RMLine> parseLines(List<String> lines) throws RMException {
