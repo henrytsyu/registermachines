@@ -3,6 +3,8 @@ package com.henrytsyu.registermachines.parser;
 import com.henrytsyu.registermachines.exception.RMException;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class RMParserTest {
@@ -35,5 +37,27 @@ class RMParserTest {
   public void parsesDecrement() throws RMException {
     RMLine line = parser.parseLine("L0:R0->L0,L1");
     assertEquals(new RMDecrement(0, 0, 1), line.instruction());
+  }
+
+  @Test
+  public void parsesLines() throws RMException {
+    List<RMLine> lines = parser.parseLines(List.of("L0:R0->L0,L1", "L1:R1+>L2", "L2:HALT"));
+    assertEquals(new RMLabel(0), lines.get(0).label());
+    assertEquals(new RMDecrement(0, 0, 1), lines.get(0).instruction());
+    assertEquals(new RMLabel(1), lines.get(1).label());
+    assertEquals(new RMIncrement(1, 2), lines.get(1).instruction());
+    assertEquals(new RMLabel(2), lines.get(2).label());
+    assertEquals(new RMHalt(), lines.get(2).instruction());
+  }
+
+  @Test
+  public void parsesLinesFromFile() throws RMException {
+    List<RMLine> lines = parser.parseFromFile("src/test/resources/simple.rm");
+    assertEquals(new RMLabel(0), lines.get(0).label());
+    assertEquals(new RMDecrement(0, 0, 1), lines.get(0).instruction());
+    assertEquals(new RMLabel(1), lines.get(1).label());
+    assertEquals(new RMIncrement(1, 2), lines.get(1).instruction());
+    assertEquals(new RMLabel(2), lines.get(2).label());
+    assertEquals(new RMHalt(), lines.get(2).instruction());
   }
 }
