@@ -1,27 +1,66 @@
 package com.henrytsyu.registermachines.runner;
 
-import com.henrytsyu.registermachines.parser.RMDecrement;
-import com.henrytsyu.registermachines.parser.RMHalt;
-import com.henrytsyu.registermachines.parser.RMIncrement;
+import com.henrytsyu.registermachines.parser.*;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class RMRunnerTest {
-  private final RMRunner runner = new RMRunner();
+  private final RMRunner runnerHalt = new RMRunner(Map.ofEntries(Map.entry(0, new RMHalt())));
+  private final RMRunner runnerIncrement = new RMRunner(
+      Map.ofEntries(Map.entry(0, new RMIncrement(0, 1))));
+  private final RMRunner runnerDecrementSuccess = new RMRunner(
+      Map.ofEntries(Map.entry(0, new RMDecrement(0, 1, 2))),
+      Map.ofEntries(Map.entry(0, 1)));
+  private final RMRunner runnerDecrementFail = new RMRunner(
+      Map.ofEntries(Map.entry(0, new RMDecrement(0, 1, 2))));
 
   @Test
-  public void runningHaltTerminates() {
-    boolean halted = runner.runInstruction(new RMHalt());
-    assertTrue(halted);
+  public void programCounterStartsAtZero() {
+    RMRunner runner = new RMRunner(new HashMap<>());
+    assertEquals(0, runner.getProgramCounter());
   }
 
   @Test
-  public void runningIncrementOrDecrementDoesNotTerminate() {
-    boolean incrementHalted = runner.runInstruction(new RMIncrement(0, 0));
-    assertFalse(incrementHalted);
-    boolean decrementHalted = runner.runInstruction(new RMDecrement(0, 0, 0));
-    assertFalse(decrementHalted);
+  public void runningHaltTerminates() {
+    assertTrue(runnerHalt.runStep());
+  }
+
+  @Test
+  public void runningIncrementDoesNotTerminate() {
+    assertFalse(runnerIncrement.runStep());
+  }
+
+  @Test
+  public void runningDecrementDoesNotTerminate() {
+    assertFalse(runnerDecrementSuccess.runStep());
+  }
+
+  @Test
+  public void runningHaltDoesNotChangeProgramCounter() {
+    int programCounterOld = runnerHalt.getProgramCounter();
+    runnerHalt.runStep();
+    assertEquals(programCounterOld, runnerHalt.getProgramCounter());
+  }
+
+  @Test
+  public void runningIncrementChangesProgramCounter() {
+    runnerIncrement.runStep();
+    assertEquals(1, runnerIncrement.getProgramCounter());
+  }
+
+  @Test
+  public void runningDecrementOnPositiveRegisterChangesProgramCounterToSuccess() {
+    runnerDecrementSuccess.runStep();
+    assertEquals(1, runnerDecrementSuccess.getProgramCounter());
+  }
+
+  @Test
+  public void runningDecrementOnZeroRegisterChangesProgramCounterToFail() {
+    runnerDecrementFail.runStep();
+    assertEquals(2, runnerDecrementFail.getProgramCounter());
   }
 }
