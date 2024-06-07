@@ -1,8 +1,8 @@
 package com.henrytsyu.registermachines.runner;
 
-import com.henrytsyu.registermachines.parser.RMDecrement;
-import com.henrytsyu.registermachines.parser.RMIncrement;
-import com.henrytsyu.registermachines.parser.RMInstruction;
+import com.henrytsyu.registermachines.entities.RMDecrement;
+import com.henrytsyu.registermachines.entities.RMIncrement;
+import com.henrytsyu.registermachines.entities.RMInstruction;
 
 import java.util.HashMap;
 import java.util.Map;

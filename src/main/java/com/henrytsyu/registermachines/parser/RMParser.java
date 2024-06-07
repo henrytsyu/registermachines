@@ -1,5 +1,6 @@
 package com.henrytsyu.registermachines.parser;
 
+import com.henrytsyu.registermachines.entities.*;
 import com.henrytsyu.registermachines.exception.RMDuplicateLineException;
 import com.henrytsyu.registermachines.exception.RMException;
 import com.henrytsyu.registermachines.exception.RMInstructionException;

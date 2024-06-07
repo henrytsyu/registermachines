@@ -1,6 +1,8 @@
 package com.henrytsyu.registermachines.runner;
 
-import com.henrytsyu.registermachines.parser.*;
+import com.henrytsyu.registermachines.entities.RMDecrement;
+import com.henrytsyu.registermachines.entities.RMHalt;
+import com.henrytsyu.registermachines.entities.RMIncrement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
