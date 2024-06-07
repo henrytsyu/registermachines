@@ -33,6 +33,8 @@ public class RMRunner {
    * @return whether the register machine terminates after this step
    */
   public boolean runStep() {
+    // Erroneous halt
+    if (!instructionMap.containsKey(programCounter)) return true;
     RMInstruction instruction = instructionMap.get(programCounter);
     if (instruction instanceof RMIncrement increment) {
       programCounter = increment.nextLine();
@@ -46,7 +48,7 @@ public class RMRunner {
       }
       return false;
     }
-    // instruction is RMHalt
+    // Instruction is RMHalt
     return true;
   }
 }
