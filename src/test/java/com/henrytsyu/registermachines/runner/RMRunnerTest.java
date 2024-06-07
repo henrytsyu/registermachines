@@ -3,12 +3,13 @@ package com.henrytsyu.registermachines.runner;
 import com.henrytsyu.registermachines.parser.*;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class RMRunnerTest {
+  private final RMRunner runnerEmpty = new RMRunner(Collections.emptyMap());
   private final RMRunner runnerHalt = new RMRunner(Map.ofEntries(Map.entry(0, new RMHalt())));
   private final RMRunner runnerIncrement = new RMRunner(
       Map.ofEntries(Map.entry(0, new RMIncrement(0, 1))));
@@ -20,8 +21,12 @@ public class RMRunnerTest {
 
   @Test
   public void programCounterStartsAtZero() {
-    RMRunner runner = new RMRunner(new HashMap<>());
-    assertEquals(0, runner.getProgramCounter());
+    assertEquals(0, runnerEmpty.getProgramCounter());
+  }
+
+  @Test
+  public void erroneousHaltTerminates() {
+    assertTrue(runnerEmpty.runStep());
   }
 
   @Test
