@@ -6,6 +6,7 @@ import com.henrytsyu.registermachines.entities.RMIncrement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,7 +18,7 @@ public class RMRunnerTest {
       Map.ofEntries(Map.entry(0, new RMIncrement(0, 1))));
   private final RMRunner runnerDecrementSuccess = new RMRunner(
       Map.ofEntries(Map.entry(0, new RMDecrement(0, 1, 2))),
-      Map.ofEntries(Map.entry(0, 1)));
+      new HashMap<>(Map.ofEntries(Map.entry(0, 1))));
   private final RMRunner runnerDecrementFail = new RMRunner(
       Map.ofEntries(Map.entry(0, new RMDecrement(0, 1, 2))));
 
@@ -69,5 +70,33 @@ public class RMRunnerTest {
   public void runningDecrementOnZeroRegisterChangesProgramCounterToFail() {
     runnerDecrementFail.runStep();
     assertEquals(2, runnerDecrementFail.getProgramCounter());
+  }
+
+  @Test
+  public void haltDoesNotChangeRegister() {
+    assertEquals(0, runnerHalt.getRegisterValue(0));
+    runnerHalt.runStep();
+    assertEquals(0, runnerHalt.getRegisterValue(0));
+  }
+
+  @Test
+  public void canIncrementRegister() {
+    assertEquals(0, runnerIncrement.getRegisterValue(0));
+    runnerIncrement.runStep();
+    assertEquals(1, runnerIncrement.getRegisterValue(0));
+  }
+
+  @Test
+  public void canDecrementRegister() {
+    assertEquals(1, runnerDecrementSuccess.getRegisterValue(0));
+    runnerDecrementSuccess.runStep();
+    assertEquals(0, runnerDecrementSuccess.getRegisterValue(0));
+  }
+
+  @Test
+  public void doesNotDecrementZeroRegister() {
+    assertEquals(0, runnerDecrementFail.getRegisterValue(0));
+    runnerDecrementFail.runStep();
+    assertEquals(0, runnerDecrementFail.getRegisterValue(0));
   }
 }

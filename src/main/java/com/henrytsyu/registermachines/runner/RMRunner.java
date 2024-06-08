@@ -29,6 +29,10 @@ public class RMRunner {
     return state;
   }
 
+  public int getRegisterValue(int registerNumber) {
+    return state.getOrDefault(registerNumber, 0);
+  }
+
   /**
    * @return whether the register machine terminates after this step
    */
@@ -37,6 +41,8 @@ public class RMRunner {
     if (!instructionMap.containsKey(programCounter)) return true;
     RMInstruction instruction = instructionMap.get(programCounter);
     if (instruction instanceof RMIncrement increment) {
+      int reg = increment.registerNumber();
+      state.put(reg, state.getOrDefault(reg, 0) + 1);
       programCounter = increment.nextLine();
       return false;
     }
@@ -44,6 +50,9 @@ public class RMRunner {
       if (state.getOrDefault(decrement.registerNumber(), 0) == 0) {
         programCounter = decrement.nextLineFail();
       } else {
+        int reg = decrement.registerNumber();
+        // Register value is positive
+        state.put(reg, state.get(reg) - 1);
         programCounter = decrement.nextLineSuccess();
       }
       return false;
